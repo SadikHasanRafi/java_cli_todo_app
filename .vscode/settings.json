@@ -1,0 +1,21 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "workbench.colorCustomizations": {
+        "editorGroup.border": "#f06d63",
+        "panel.border": "#f06d63",
+        "sash.hoverBorder": "#f06d63",
+        "sideBar.border": "#f06d63",
+        "statusBar.background": "#ec4134",
+        "statusBar.border": "#ec4134",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#f06d63",
+        "statusBarItem.remoteBackground": "#ec4134",
+        "statusBarItem.remoteForeground": "#e7e7e7",
+        "tab.activeBorder": "#f06d63"
+    },
+    "peacock.color": "#EC4134"
+}
