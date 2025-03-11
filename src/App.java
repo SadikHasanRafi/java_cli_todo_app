@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class App {
 
@@ -30,10 +32,32 @@ public class App {
         System.out.println("3. Exit");
         System.out.print("Enter your choice: ");
         Scanner scanner = new Scanner(System.in);
-        String loginChoice = scanner.nextLine();
-        clearDisplay();
+        int loginChoice = scanner.nextInt();
+        if (loginChoice == 1) {
+            registerView();
+        } else if (loginChoice == 2) {
+            loginView();
+        } else if(loginChoice == 3) {
+            clearDisplay();            
+        }else{
+            clearDisplay();
+            delay("Invalid Input. Please try again...",3);
+            authenticationView();
+        }
     }
 
+
+
+
+
+    public static void delay(String message, int seconds) {
+        try {
+            System.out.println(message);
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
@@ -45,8 +69,6 @@ public class App {
     public static void loginView(){
         System.out.println("Login");
     }
-
-
 
 
 
