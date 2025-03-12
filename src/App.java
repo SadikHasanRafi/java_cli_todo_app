@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class App {
 
@@ -46,9 +48,45 @@ public class App {
         }
     }
 
+    public static void registerView(){
+        clearDisplay();
+        Scanner scanner = new Scanner(System.in);
 
+        System.out.println("\n===== Register Account =====");
+        
+        System.out.print("Enter email: ");
+        String email = scanner.nextLine();
+        if (!checkEmail(email)) {
+            clearDisplay();
+            delay("Enter a valid email...",2);  
+            registerView();
+          } 
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
 
+        System.out.print("Confirm password: ");
+        String confirmPassword = scanner.nextLine();   
+        
+        if (!password.equals(confirmPassword)) {
+            clearDisplay();
+            delay("Passwords do not match. Please try again...",1);
+            System.out.println("Enter 'b' to go back.");
+            System.out.println("Enter 't' to try again.");
+            String back = scanner.nextLine();
 
+            if ("b".equals(back)) {
+                authenticationView();
+            }else if(back.equals("t")){
+                registerView();
+            }else{
+                clearDisplay();
+                delay("Invalid Input. Please try again...",3);
+                authenticationView();
+            }
+        }else{
+            todoMainMenuView();
+        }
+    }
 
     public static void delay(String message, int seconds) {
         try {
@@ -59,17 +97,58 @@ public class App {
         }
     }
 
+    public static boolean checkEmail(String email){
+        if (email == null) { 
+            return false; 
+        }
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
-
-
-    public static void registerView(){
-        System.out.println("Registering");
+        Pattern p = Pattern.compile(emailRegex); 
+        Matcher m = p.matcher(email); 
+        return m.matches(); 
     }
 
     public static void loginView(){
-        System.out.println("Login");
+        clearDisplay();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n===== Login =====");
+
+        System.out.print("Enter email: ");
+        String email = scanner.nextLine();
+        if (!checkEmail(email)) {
+            clearDisplay();
+          delay("Enter a valid email...",2);  
+          loginView();
+        } 
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        if (email.length() > 0 && password.length() > 0) {
+            System.out.println("Login successful! Redirecting...");
+            delay("Redirecting to your To-Do list...", 1);
+            todoMainMenuView();
+        } else {
+            System.out.println("Invalid username or password.");
+            delay("Please try again...", 1);
+            System.out.println("Enter 'b' to go back.");
+            System.out.println("Enter 't' to try again.");
+            String back = scanner.nextLine();
+            if ("b".equals(back)) {
+                authenticationView();
+            }else if(back.equals("t")){
+                loginView();
+            }else{
+                clearDisplay();
+                delay("Invalid Input. Please try again...",3);
+                loginView(); 
+            }
+        }
     }
 
-
+    public static void todoMainMenuView(){
+        clearDisplay();
+        System.out.println("\n===== To-Do List =====");
+        // todo list view
+    }
 
 }
