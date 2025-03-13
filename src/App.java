@@ -1,4 +1,11 @@
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,19 +18,37 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         authenticationView();
+        // testDatabase();
     }
+
+    // //! database connection test
+    // public static void testDatabase () throws SQLException{
+    //     String sql = "SELECT email from customers where firstname = 'John'";
+    //     String url = "jdbc:postgresql://localhost:5432/my_test_db_1";
+    //     String user = "postgres";
+    //     String password = "123456";
+    //     Connection con = DriverManager.getConnection(url, user, password); 
+    //     Statement st = con.createStatement();
+    //     ResultSet rs = st.executeQuery(sql);
+    //     rs.next();
+    //     String email = rs.getString(1);
+    //     System.out.println(email);
+    //     st.close();
+    // }
 
     public static void clearDisplay() {
         // System.out.print("\033\143"); // only for linux system
-          try {
-        if (System.getProperty("os.name").contains("Windows")){
-            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+        try {
+            if (System.getProperty("os.name").contains("Windows")){
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            }
+            else{
+                Runtime.getRuntime().exec("clear");
+                System.out.print("\033\143");
+            }
+        } catch (IOException | InterruptedException ex) {
+            
         }
-        else{
-            Runtime.getRuntime().exec("clear");
-            System.out.print("\033\143");
-          }
-    } catch (IOException | InterruptedException ex) {}
     }
 
     public static void authenticationView(){
@@ -147,8 +172,19 @@ public class App {
 
     public static void todoMainMenuView(){
         clearDisplay();
+        Scanner scanner = new Scanner(System.in);
         System.out.println("\n===== To-Do List =====");
-        // todo list view
+        System.out.println("1. Create a new task.");
+        System.out.println("2. Show all tasks.");
+        System.out.println("3. Sign out.");
+        int choice = scanner.nextInt();
+        if (choice == 1) {
+            System.out.println("create a new task");
+        } else if(choice == 2) {
+            System.out.println("show all tasks");
+        }else{
+            authenticationView();
+        }
     }
 
 }

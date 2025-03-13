@@ -2,7 +2,8 @@
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
-        "lib/**/*.jar"
+        "lib/**/*.jar",
+        "/home/rafi/Downloads/java_libs/postgresql-42.7.5.jar"
     ],
     "workbench.colorCustomizations": {
         "editorGroup.border": "#f06d63",
