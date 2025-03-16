@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -60,7 +61,7 @@ public class App {
         }
     }
 
-    public static void authenticationView(){
+    public static void authenticationView() throws SQLException{
         clearDisplay();
         System.out.println("\n===== ToDo CLI App =====");
         System.out.println("1. Register");
@@ -83,7 +84,7 @@ public class App {
         }
     }
 
-    public static void registerView(){
+    public static void registerView() throws SQLException{
         clearDisplay();
         Scanner scanner = new Scanner(System.in);
 
@@ -119,7 +120,7 @@ public class App {
                 authenticationView();
             }
         }else{
-            todoMainMenuView();
+            createNewUser(email, password);
         }
     }
 
@@ -180,7 +181,7 @@ public class App {
         }
     }
 
-    public static void todoMainMenuView(){
+    public static void todoMainMenuView() throws SQLException{
         clearDisplay();
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n===== To-Do List =====");
@@ -195,6 +196,15 @@ public class App {
         }else{
             authenticationView();
         }
+    }
+
+    public static void createNewUser(String email, String password) throws SQLException{
+        System.out.println(email + " " + password);
+
+        //todo start from here
+        PreparedStatement st = getConnection().prepareStatement(sql:" INSERT INTO authenticate(id, email,password) VALUES");
+
+        todoMainMenuView();
     }
 
     
