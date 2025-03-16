@@ -2,39 +2,48 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.sql.DataSource;
+
+import org.postgresql.ds.PGSimpleDataSource;
 
 public class App {
 
     public static int choice = 0;
+    public static Connection connection = null;
 
     public static void main(String[] args) throws Exception {
-        authenticationView();
-        // testDatabase();
+        // authenticationView();
+        testDatabase();
+    }
+
+    public static Connection getConnection() throws SQLException{
+        String connectionString = "jdbc:postgresql://postgres:123456@localhost:5432/todo_cli_java";
+        final PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setUrl(connectionString);
+        Connection connection = dataSource.getConnection();
+        return connection;
     }
 
     // //! database connection test
-    // public static void testDatabase () throws SQLException{
-    //     String sql = "SELECT email from customers where firstname = 'John'";
-    //     String url = "jdbc:postgresql://localhost:5432/my_test_db_1";
-    //     String user = "postgres";
-    //     String password = "123456";
-    //     Connection con = DriverManager.getConnection(url, user, password); 
-    //     Statement st = con.createStatement();
-    //     ResultSet rs = st.executeQuery(sql);
-    //     rs.next();
-    //     String email = rs.getString(1);
-    //     System.out.println(email);
-    //     st.close();
-    // }
+    public static void testDatabase () throws SQLException{
+        String sql = "SELECT email from customers where firstname = 'John'";
+        String url = "jdbc:postgresql://localhost:5432/my_test_db_1";
+        String user = "postgres";
+        String password = "123456";
+        Connection con = DriverManager.getConnection(url, user, password); 
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        rs.next();
+        String email = rs.getString(1);
+        System.out.println(email);
+        st.close();
+    }
 
     public static void clearDisplay() {
         // System.out.print("\033\143"); // only for linux system
@@ -60,6 +69,7 @@ public class App {
         System.out.print("Enter your choice: ");
         Scanner scanner = new Scanner(System.in);
         int loginChoice = scanner.nextInt();
+        System.out.println(loginChoice);
         if (loginChoice == 1) {
             registerView();
         } else if (loginChoice == 2) {
@@ -186,5 +196,7 @@ public class App {
             authenticationView();
         }
     }
+
+    
 
 }
