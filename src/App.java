@@ -17,10 +17,14 @@ public class App {
 
     public static int choice = 0;
     public static Connection connection = null;
-
+    public static String email= null;
     public static void main(String[] args) throws Exception {
         authenticationView();
         // testDatabase();
+    }
+
+    public static void setEmail(String currentEmail) {
+        email = currentEmail; // Modifies the static variable
     }
 
     public static Connection getConnection() throws SQLException {
@@ -40,8 +44,8 @@ public class App {
             if (System.getProperty("os.name").contains("Windows")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             } else {
-                // Runtime.getRuntime().exec("clear");
-                // System.out.print("\033\143");
+                Runtime.getRuntime().exec("clear");
+                System.out.print("\033\143");
             }
         } catch (IOException | InterruptedException ex) {
 
@@ -78,12 +82,15 @@ public class App {
         System.out.println("\n===== Register Account =====");
 
         System.out.print("Enter email: ");
-        String email = scanner.nextLine();
-        if (!checkEmail(email)) {
+        String emailString = scanner.nextLine();
+        if (!checkEmail(emailString)) {
             clearDisplay();
             delay("Enter a valid email...", 2);
             registerView();
         }
+        
+        setEmail(emailString);
+        
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
@@ -107,7 +114,7 @@ public class App {
                 authenticationView();
             }
         } else {
-            createNewUser(email, password);
+            createNewUser(emailString, password);
         }
     }
 
@@ -138,6 +145,7 @@ public class App {
 
         System.out.print("Enter email: ");
         String email = scanner.nextLine();
+        setEmail(email);
         if (!checkEmail(email)) {
             clearDisplay();
             delay("Enter a valid email...", 2);
@@ -168,28 +176,73 @@ public class App {
         }
     }
 
-    public static void todoMainMenuView() throws SQLException {
+        public static void todoMainMenuView() throws SQLException {
+            clearDisplay();
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("\n===== To-Do List =====");
+            System.out.println("1. Create a new task.");
+            System.out.println("2. Show all tasks.");
+            System.out.println("3. Sign out.");
+            System.out.print("Enter your choice : ");
+            int choice = scanner.nextInt();
+            if (choice == 1) {
+                scanner = new Scanner(System.in);
+                clearDisplay();
+                // Task Creation Section
+                System.out.println("\n----- Create a New Task -----");
+                System.out.print("Enter Task Title: ");
+                String title = scanner.nextLine(); // Input for title
+                
+                System.out.print("Enter Task Details: ");
+                String details = scanner.nextLine(); // Input for details
+
+
+                createTodo(title,details);
+            } else if (choice == 2) {
+                System.out.println("show all tasks");
+            } else {
+                authenticationView();
+            }
+        }
+
+    public static void createTodo(String title, String details) throws SQLException{
         clearDisplay();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("\n===== To-Do List =====");
-        System.out.println("1. Create a new task.");
-        System.out.println("2. Show all tasks.");
-        System.out.println("3. Sign out.");
-        int choice = scanner.nextInt();
-        if (choice == 1) {
-            System.out.println("create a new task");
-        } else if (choice == 2) {
-            System.out.println("show all tasks");
-        } else {
-            authenticationView();
+        try {
+            String sql = "Insert into todo(title, details, email) values(?, ?, ?)";
+            PreparedStatement statement = getConnection().prepareStatement(sql);
+            statement.setString(1,title);
+            statement.setString(2,details);
+            statement.setString(3,email);
+            statement.executeUpdate();
+            getConnection().close();
+            // Display the entered task information
+            System.out.println("\nTask Created Successfully!");
+            for (int i = 0 ; i < details.length()+15 ; i++) {
+                if (i == details.length()+14) {
+                    System.out.println("-");                    
+                }else{
+                    System.out.print("-");
+                }
+            }
+            System.out.println("Title: " + title);
+            System.out.println("Details: " + details);
+            for (int i = 0 ; i < details.length()+15 ; i++) {
+                if (i == details.length()+14) {
+                    System.out.println("-");                    
+                }else{
+                    System.out.print("-");
+                }
+            }
+            delay("Redirecting to your To-Do list...", 3);
+        } catch (Exception e) {
+            System.out.println("Exception occurred is : " + e.getMessage());
+        } finally{
+            todoMainMenuView();
         }
     }
 
     public static void createNewUser(String email, String password) throws SQLException {
-        System.out.println(email + " " + password);
-
         try {
-            // todo start from here
             String sql = "INSERT INTO authenticate( email,password) VALUES (?, ?)";
             PreparedStatement st = getConnection().prepareStatement(sql);
             st.setString(1, email);
@@ -198,12 +251,10 @@ public class App {
             System.out.println(insertedRow);
             getConnection().close();
         } catch (Exception e) {
-            System.out.println("Exception occurred is" + e.getMessage());
+            System.out.println("Exception occurred is :" + e.getMessage());
         } finally {
             todoMainMenuView();
         }
-        // System.out.println(insertedRow);
-        // todoMainMenuView();
     }
 
 }
