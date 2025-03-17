@@ -19,49 +19,36 @@ public class App {
     public static Connection connection = null;
 
     public static void main(String[] args) throws Exception {
-        // authenticationView();
-        testDatabase();
+        authenticationView();
+        // testDatabase();
     }
 
-    public static Connection getConnection() throws SQLException{
-        String connectionString = "jdbc:postgresql://postgres:123456@localhost:5432/todo_cli_java";
+    public static Connection getConnection() throws SQLException {
         final PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        dataSource.setUrl(connectionString);
+        dataSource.setServerNames(new String[] { "localhost" });
+        dataSource.setPortNumbers(new int[] { 5432 });
+        dataSource.setDatabaseName("todo_cli_java");
+        dataSource.setUser("postgres"); 
+        dataSource.setPassword("123456"); 
         Connection connection = dataSource.getConnection();
         return connection;
-    }
-
-    // //! database connection test
-    public static void testDatabase () throws SQLException{
-        String sql = "SELECT email from customers where firstname = 'John'";
-        String url = "jdbc:postgresql://localhost:5432/my_test_db_1";
-        String user = "postgres";
-        String password = "123456";
-        Connection con = DriverManager.getConnection(url, user, password); 
-        Statement st = con.createStatement();
-        ResultSet rs = st.executeQuery(sql);
-        rs.next();
-        String email = rs.getString(1);
-        System.out.println(email);
-        st.close();
     }
 
     public static void clearDisplay() {
         // System.out.print("\033\143"); // only for linux system
         try {
-            if (System.getProperty("os.name").contains("Windows")){
+            if (System.getProperty("os.name").contains("Windows")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            }
-            else{
-                Runtime.getRuntime().exec("clear");
-                System.out.print("\033\143");
+            } else {
+                // Runtime.getRuntime().exec("clear");
+                // System.out.print("\033\143");
             }
         } catch (IOException | InterruptedException ex) {
-            
+
         }
     }
 
-    public static void authenticationView() throws SQLException{
+    public static void authenticationView() throws SQLException {
         clearDisplay();
         System.out.println("\n===== ToDo CLI App =====");
         System.out.println("1. Register");
@@ -75,51 +62,51 @@ public class App {
             registerView();
         } else if (loginChoice == 2) {
             loginView();
-        } else if(loginChoice == 3) {
-            clearDisplay();            
-        }else{
+        } else if (loginChoice == 3) {
             clearDisplay();
-            delay("Invalid Input. Please try again...",3);
+        } else {
+            clearDisplay();
+            delay("Invalid Input. Please try again...", 3);
             authenticationView();
         }
     }
 
-    public static void registerView() throws SQLException{
+    public static void registerView() throws SQLException {
         clearDisplay();
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("\n===== Register Account =====");
-        
+
         System.out.print("Enter email: ");
         String email = scanner.nextLine();
         if (!checkEmail(email)) {
             clearDisplay();
-            delay("Enter a valid email...",2);  
+            delay("Enter a valid email...", 2);
             registerView();
-          } 
+        }
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
         System.out.print("Confirm password: ");
-        String confirmPassword = scanner.nextLine();   
-        
+        String confirmPassword = scanner.nextLine();
+
         if (!password.equals(confirmPassword)) {
             clearDisplay();
-            delay("Passwords do not match. Please try again...",1);
+            delay("Passwords do not match. Please try again...", 1);
             System.out.println("Enter 'b' to go back.");
             System.out.println("Enter 't' to try again.");
             String back = scanner.nextLine();
 
             if ("b".equals(back)) {
                 authenticationView();
-            }else if(back.equals("t")){
+            } else if (back.equals("t")) {
                 registerView();
-            }else{
+            } else {
                 clearDisplay();
-                delay("Invalid Input. Please try again...",3);
+                delay("Invalid Input. Please try again...", 3);
                 authenticationView();
             }
-        }else{
+        } else {
             createNewUser(email, password);
         }
     }
@@ -133,18 +120,18 @@ public class App {
         }
     }
 
-    public static boolean checkEmail(String email){
-        if (email == null) { 
-            return false; 
+    public static boolean checkEmail(String email) {
+        if (email == null) {
+            return false;
         }
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
-        Pattern p = Pattern.compile(emailRegex); 
-        Matcher m = p.matcher(email); 
-        return m.matches(); 
+        Pattern p = Pattern.compile(emailRegex);
+        Matcher m = p.matcher(email);
+        return m.matches();
     }
 
-    public static void loginView(){
+    public static void loginView() throws SQLException {
         clearDisplay();
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n===== Login =====");
@@ -153,9 +140,9 @@ public class App {
         String email = scanner.nextLine();
         if (!checkEmail(email)) {
             clearDisplay();
-          delay("Enter a valid email...",2);  
-          loginView();
-        } 
+            delay("Enter a valid email...", 2);
+            loginView();
+        }
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
@@ -171,17 +158,17 @@ public class App {
             String back = scanner.nextLine();
             if ("b".equals(back)) {
                 authenticationView();
-            }else if(back.equals("t")){
+            } else if (back.equals("t")) {
                 loginView();
-            }else{
+            } else {
                 clearDisplay();
-                delay("Invalid Input. Please try again...",3);
-                loginView(); 
+                delay("Invalid Input. Please try again...", 3);
+                loginView();
             }
         }
     }
 
-    public static void todoMainMenuView() throws SQLException{
+    public static void todoMainMenuView() throws SQLException {
         clearDisplay();
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n===== To-Do List =====");
@@ -191,22 +178,32 @@ public class App {
         int choice = scanner.nextInt();
         if (choice == 1) {
             System.out.println("create a new task");
-        } else if(choice == 2) {
+        } else if (choice == 2) {
             System.out.println("show all tasks");
-        }else{
+        } else {
             authenticationView();
         }
     }
 
-    public static void createNewUser(String email, String password) throws SQLException{
+    public static void createNewUser(String email, String password) throws SQLException {
         System.out.println(email + " " + password);
 
-        //todo start from here
-        PreparedStatement st = getConnection().prepareStatement(sql:" INSERT INTO authenticate(id, email,password) VALUES");
-
-        todoMainMenuView();
+        try {
+            // todo start from here
+            String sql = "INSERT INTO authenticate( email,password) VALUES (?, ?)";
+            PreparedStatement st = getConnection().prepareStatement(sql);
+            st.setString(1, email);
+            st.setString(2, password);
+            int insertedRow = st.executeUpdate();
+            System.out.println(insertedRow);
+            getConnection().close();
+        } catch (Exception e) {
+            System.out.println("Exception occurred is" + e.getMessage());
+        } finally {
+            todoMainMenuView();
+        }
+        // System.out.println(insertedRow);
+        // todoMainMenuView();
     }
-
-    
 
 }
