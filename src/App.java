@@ -249,10 +249,26 @@ public class App {
 
     public static void deleteTodoView() throws SQLException {
         //todo complete this 
+        clearDisplay();
+        showListTable();
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Task ID to delete : ");
+        int taskId = scanner.nextInt();
+        String sql = "delete from todo where id = ? and email = ?";
+        PreparedStatement statement = getConnection().prepareStatement(sql);
+        statement.setInt(1, taskId);
+        statement.setString(2, email);
+        int rowsAffected = statement.executeUpdate();
+        if (rowsAffected > 0) {
+            delay("Task deleted successfully.", 2);
+            showAllTasksView();
+        }else{
+            delay("Task does not exist.",3);
+            showAllTasksView();
+        }
     }
 
     public static void viewDetails() throws SQLException {
-        // todo complete this
         clearDisplay();
         showListTable();
         Scanner scanner = new Scanner(System.in);
