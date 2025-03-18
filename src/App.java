@@ -215,7 +215,7 @@ public class App {
                 break;
             }
             case 2: {
-                // viewDetails()
+                viewDetails();
                 break;
             }
             case 3: {
@@ -251,7 +251,40 @@ public class App {
         //todo complete this 
     }
 
-
+    public static void viewDetails() throws SQLException {
+        // todo complete this
+        clearDisplay();
+        showListTable();
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Task ID to view details : ");
+        int taskId = scanner.nextInt();
+        String sql = "select * from todo where id = ? and email = ?";
+        PreparedStatement statement = getConnection().prepareStatement(sql);
+        statement.setInt(1, taskId);
+        statement.setString(2, email);
+        ResultSet rs = statement.executeQuery();
+        if (rs.next()) {
+            System.out.println("Task Title: " + rs.getString("title"));
+            System.out.println("Task Details: ");
+            System.out.println(rs.getString("details"));            
+        } else {
+            delay("Task does not exist.",3);
+            showAllTasksView();
+        }
+        System.out.println("\n1.Show another task details");
+        System.out.println("2.Go Back.");
+        System.out.print("Enter your choice : ");
+        choice = scanner.nextInt();
+        if (choice == 1) {
+            viewDetails();
+        } else if(choice == 2) {
+            todoMainMenuView();
+        }else{
+            clearDisplay();
+            delay("Something went wrong... ",2);
+            showAllTasksView();
+        }
+    }
 
     // done create methods
 
