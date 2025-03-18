@@ -244,11 +244,77 @@ public class App {
     }
 
     public static void updateTodoView() throws SQLException {
-        
+
+
+
+        clearDisplay();
+        showListTable();
+        String titlePrev = null, detailsPrev = null;
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Task ID to update : ");
+        int taskId = scanner.nextInt();
+        String sql = "select * from todo where id = ? and email = ?";
+        PreparedStatement statement = getConnection().prepareStatement(sql);
+        statement.setInt(1, taskId);
+        statement.setString(2, email);
+        ResultSet rs = statement.executeQuery();
+        if (rs.next()) {
+            titlePrev = rs.getString("title");
+            detailsPrev = rs.getString("details");
+            System.out.println("\nTask Title: " + rs.getString("title"));
+            System.out.println("Task Details: ");
+            System.out.println("\t"+ rs.getString("details"));            
+        } else {
+            delay("Task does not exist.",3);
+            showAllTasksView();
+        }
+
+        String title = null, details = null;
+
+        System.out.println("\nWhich one you want to Update : ");
+        System.out.println("1. Title");
+        System.out.println("2. Details");
+        System.out.print("Enter your choice : ");
+        int choice = scanner.nextInt();
+        scanner.nextLine();  
+        if (choice == 1) {
+            System.out.print("Enter new title of your task : ");
+            title = scanner.nextLine();
+        } else if( choice == 2 ) {
+            System.out.println("Enter new details of your task : ");
+            details = scanner.nextLine();
+        }else{
+            delay("Something went wrong !", 2);
+            showAllTasksView();
+        }
+
+        if (title != null && detailsPrev != null) {
+            details = detailsPrev;
+        } else if (details != null && titlePrev != null) {
+            title = titlePrev;
+        }
+
+        sql = "update todo set title =?, details =? where id = ? and email = ?";
+        statement = getConnection().prepareStatement(sql);
+        statement.setString(1, title);
+        statement.setString(2, details);
+        statement.setInt(3, taskId);
+        statement.setString(4,email);
+        int rowsAffected = statement.executeUpdate(); 
+        if (rowsAffected > 0) {
+            System.out.println("Task Updated Successfully...");
+            System.out.println("Updated Task Title: " + title);  
+            System.out.println("Updated Task Details: ");
+            System.out.println("\t"+details);  
+            delay("Redirecting to task list...",3);
+            showAllTasksView();
+        } else {
+            delay("No matching task found or update failed. Try again !",2);
+            updateTodoView();
+        }
     }
 
     public static void deleteTodoView() throws SQLException {
-        //todo complete this 
         clearDisplay();
         showListTable();
         Scanner scanner = new Scanner(System.in);
@@ -272,7 +338,7 @@ public class App {
         clearDisplay();
         showListTable();
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter Task ID to view details : ");
+        System.out.print("\nEnter Task ID to view details : ");
         int taskId = scanner.nextInt();
         String sql = "select * from todo where id = ? and email = ?";
         PreparedStatement statement = getConnection().prepareStatement(sql);
@@ -280,9 +346,9 @@ public class App {
         statement.setString(2, email);
         ResultSet rs = statement.executeQuery();
         if (rs.next()) {
-            System.out.println("Task Title: " + rs.getString("title"));
+            System.out.println("\nTask Title: " + rs.getString("title"));
             System.out.println("Task Details: ");
-            System.out.println(rs.getString("details"));            
+            System.out.println("\t"+rs.getString("details"));            
         } else {
             delay("Task does not exist.",3);
             showAllTasksView();
