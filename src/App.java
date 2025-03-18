@@ -25,6 +25,8 @@ public class App {
         // testDatabase();
     }
 
+
+
     // done view methods
 
     public static void authenticationView() throws SQLException {
@@ -36,7 +38,6 @@ public class App {
         System.out.print("Enter your choice: ");
         Scanner scanner = new Scanner(System.in);
         int loginChoice = scanner.nextInt();
-        System.out.println(loginChoice);
         if (loginChoice == 1) {
             registerView();
         } else if (loginChoice == 2) {
@@ -60,7 +61,7 @@ public class App {
         String emailString = scanner.nextLine();
         if (!checkEmail(emailString)) {
             clearDisplay();
-            delay("Enter a valid email...", 2);
+            delay("Enter a valid email...", 1);
             registerView();
         }
 
@@ -110,11 +111,38 @@ public class App {
         String password = scanner.nextLine();
 
         if (email.length() > 0 && password.length() > 0) {
-            System.out.println("Login successful! Redirecting...");
-            delay("Redirecting to your To-Do list...", 1);
-            todoMainMenuView();
+            if (!checkEmail(email)) {
+                clearDisplay();
+                delay("Enter a valid email...", 2);
+                loginView();
+            }else{
+                setEmail(email);
+                try {
+                    String sql = "select * from authenticate where email = ?";
+                    PreparedStatement statement = getConnection().prepareStatement(sql);
+                    statement.setString(1, email);
+                    ResultSet rs = statement.executeQuery();
+                    if(rs.next()){
+                        // System.out.println(rs.getString("email"));
+                        if(rs.getString("password").equals(password)){
+                            delay("Login successful! Redirecting ...", 1);
+                            todoMainMenuView();
+                        }else{
+                            delay("Incorrect password. Try again...", 2);
+                            loginView();
+                        }
+                    }else{
+                        clearDisplay();
+                        delay("User not found. Try again...",2);
+                        authenticationView();
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    authenticationView();
+                }
+            }
         } else {
-            System.out.println("Invalid username or password.");
+            System.out.println("Invalid email or password.");
             delay("Please try again...", 1);
             System.out.println("Enter 'b' to go back.");
             System.out.println("Enter 't' to try again.");
@@ -163,23 +191,56 @@ public class App {
         showListTable();
         System.out.println();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("1. Update a task.");
-        System.out.println("2. Delete a task.");
-        System.out.println("3. Return to Main Menu.");
+        System.out.println("1. Create a task.");
+        System.out.println("2. View a task.");
+        System.out.println("3. Update a task.");
+        System.out.println("4. Delete a task.");
+        System.out.println("5. Return to Main Menu.");
         System.out.print("Enter your choice : ");
         int choice = scanner.nextInt();
 
-        if (choice == 1) {
-            updateTodoView();
-        } else if(choice == 2) {
-            deleteTodoView();
-        }else if(choice == 3) {
-            todoMainMenuView();
-        }else{
-            clearDisplay();
-            delay("Invalid Input. Please try again...", 3);
-            showAllTasksView();
+        switch (choice) { 
+            case 1: {
+                scanner = new Scanner(System.in);
+                clearDisplay();
+                // Task Creation Section
+                System.out.println("\n----- Create a New Task -----");
+                System.out.print("Enter Task Title: ");
+                String title = scanner.nextLine(); // Input for title
+        
+                System.out.print("Enter Task Details: ");
+                String details = scanner.nextLine(); // Input for details
+        
+                createTodo(title, details);
+                break;
+            }
+            case 2: {
+                // viewDetails()
+                break;
+            }
+            case 3: {
+                updateTodoView();
+                break;
+            }
+            case 4: {
+                deleteTodoView();
+                break;
+            }
+            case 5: {
+                todoMainMenuView();
+                break;
+            }
+        
+            default: {
+                clearDisplay();
+                delay("Invalid Input. Please try again...", 3);
+                showAllTasksView();
+                break;
+            }
         }
+        
+
+
     }
 
     public static void updateTodoView() throws SQLException {
@@ -189,6 +250,8 @@ public class App {
     public static void deleteTodoView() throws SQLException {
         //todo complete this 
     }
+
+
 
     // done create methods
 
@@ -243,6 +306,8 @@ public class App {
             todoMainMenuView();
         }
     }
+
+
 
     // done utility methods
 
@@ -308,11 +373,11 @@ public class App {
         while (resultSet.next()) {
             System.out.printf("| %-4d | %-20s | %-100s |\n",
                         resultSet.getInt("id"),
-                        resultSet.getString("title"),
-                        resultSet.getString("details")
-                    );
+                        resultSet.getString("title").length() <= 17 ? resultSet.getString("title") : resultSet.getString("title").substring(0, 17)+ "...",
+                        resultSet.getString("details").length() <= 97 ? resultSet.getString("details") : resultSet.getString("details").substring(0, 97)
+                        + "...");
+                    System.out.println("|------|----------------------|------------------------------------------------------------------------------------------------------|");
         }
-        System.out.println("|------|----------------------|------------------------------------------------------------------------------------------------------|");
     }
 
 }
